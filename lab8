@@ -1,0 +1,84 @@
+typedef struct binary_heap {
+    int *values;
+    size_t capacity;
+    size_t length;
+} binary_heap_t;
+
+EX 1(cpp):
+
+void sort_using_pq_heaps(int *values, size_t length) {
+	 vector<int> v;
+	 make_heap(v.begin(), v.end());
+	 int max;
+	 int dim =length;
+	 for(int i =0; i < dim;i++){
+	 	for(int j=0;j<dim;j++){
+	 		if(values[i]<values[j]){
+	 			max=values[j];
+	 			values[j]=values[i];
+	 			values[i]=max;
+
+	 		}
+	 	}
+	 }
+	 for(int i =0; i < dim;i++){
+	 	v.push_back(values[i]);
+	 }
+}
+
+EX 2:
+void swap(int *x,int *y){
+	int temp=*x;
+	*x =*y;
+	*y=temp;
+}
+
+void heap_push(binary_heap_t * const heap, const int value) {
+    int i=heap->length;
+
+	if(heap->length == heap->capacity)	
+		return;
+	heap->length=heap->length+1;
+	(heap->values)[i]=value;
+	while(i !=0 && (heap->values)[(i-1)/2] > (heap->values)[i]){
+		swap(&((heap->values)[i]),&((heap->values)[(i-1)/2]));
+		i=(i-1)/2;
+	}
+}
+	
+int heap_top(binary_heap_t const * const heap) {
+	return (heap->values)[0];
+}
+
+void percolate_down(binary_heap_t * const heap, int current )
+{
+    int child, tmp =  (heap->values)[ current - 1 ], i =heap->length;
+
+    while( current * 2 <= i )
+    {
+        child = current * 2;
+        if( child != (i) && heap->values[ child ] < heap->values[ child - 1 ] )
+            child++;
+        if( heap->values[ child -1 ] < tmp )
+            heap->values[ current - 1 ] = heap->values[ child - 1 ];
+        else
+            break;
+        current = child;
+
+    }
+     heap->values[ current - 1] = tmp;
+}
+
+void heap_pop(binary_heap_t * const heap) {
+    heap->values[ 0 ] = (heap->values)[ --heap->length];
+    percolate_down(heap, 1);
+}
+EX 3:error :)
+void heap_remove(binary_heap_t * const heap, const int value) {
+	int i,j=heap->length;
+	for(i=0; i< j; i++){
+		if(heap->values[i] == value)
+			break;
+	}
+	heap->values[i]=(2*i + 1);
+}
