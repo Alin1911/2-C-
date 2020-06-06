@@ -1,0 +1,109 @@
+typedef struct trie_node {
+    bool is_word_end;
+    struct trie_node *children[ALPHABET_SIZE];
+    struct trie_node *parent;
+} trie_node_t;
+
+trie_node_t* nod_nou()
+{
+    trie_node_t *nod =( trie_node_t *)malloc(sizeof(trie_node_t));
+    nod->is_word_end = false;
+    for(int i=0 ; i<26 ; i++)
+    {
+        nod->children[i] = NULL;
+    }
+    return nod;
+}
+
+void insereaza(trie_node_t *root, char *str, int i)
+{
+    int x = str[i] - 'a';
+    if(i < strlen(str))
+    {
+        if(!root->children[x])
+        {
+            root->children[x] = nod_nou();
+        }
+        insereaza(root->children[x], str, i+1);
+    }
+    else
+    {
+        root->is_word_end = true;
+    }
+}
+
+void insert(trie_node_t *root, char *str)
+{
+    insereaza(root, str, 0);
+}
+
+bool contains(trie_node_t *root, char *str) {
+    trie_node_t *trie_n = root; 
+    int x;
+    for (int i = 0; i < strlen(str); i++) 
+    { 
+        x = str[i] - 'a'; 
+        if (!trie_n->children[x]) 
+            return false; 
+  
+        trie_n = trie_n->children[x]; 
+    } 
+    return (trie_n != NULL && trie_n->is_word_end); 
+}
+
+trie_node_t * search(trie_node_t * root, char *str) {
+    char a = 'a';
+    for(str ;*str != '\0'; ++str){
+        if(root->children[*str - a]) {
+            root = root->children[*str - a];
+        } else {
+            return NULL;
+        }
+    }
+    if(root->is_word_end != 0) {
+        return root;
+    } else {
+        return NULL;
+    }
+}
+
+void remove(trie_node_t *root, char *str) 
+{
+    trie_node_t *curent = search(root, str);
+    if(!curent)
+        return; 
+    curent->is_word_end=false;
+    trie_node_t *parent = NULL;
+    bool valoare = true;
+
+   	for(int i = 0; i< 26; ++i) {
+        if(curent->children[i]) {
+            valoare = false;
+            break;
+        }
+    }
+
+    while(curent->parent) 
+    {
+        if(curent->is_word_end == false){
+            if(valoare){
+                parent = curent->parent;
+                for(int i = 0; i < 26 ; ++i) {
+                    if(parent->children[i] == curent) {
+                        parent->children[i] = NULL;
+                        free(curent);
+                        curent = parent;
+                    } else 
+                        if (parent->children){
+                            valoare = false;
+                            break;
+                        }
+                }
+            } else 
+                break;
+        } else 
+            break;
+    }
+}
+
+
