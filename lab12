@@ -1,0 +1,110 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include <stdbool.h>
+
+typedef struct hash_list {
+    char* value;
+    struct hash_list *next;
+} hash_list;
+
+typedef struct hash_table {
+    int size;
+    hash_list **entries;
+    int (*hash_function) (char*, int);
+} hash_table;
+
+int hash(char* value, int size)
+{
+    int s = 0;
+
+    for (int i = 0; i < strlen(value); i++) {
+        int c = value[i];
+        s = (s + c) % size;
+    }
+
+    return s;
+}
+
+void insert(hash_table *ht, char* value)
+{
+    int idx = ht -> hash_function(value, ht -> size);
+
+    for (hash_list *node = ht -> entries[idx]; node != NULL; node = node -> next) {
+        if (node -> value == value) {
+            return;
+        }
+    }
+
+    hash_list *node = malloc(sizeof(*node));
+    node -> value = value;
+    node -> next = NULL;
+
+
+    if (ht -> entries[idx] == NULL ) {
+        ht -> entries[idx] = node;
+    }
+    else {
+        node -> next = ht -> entries[idx];
+        ht -> entries[idx] = node;
+    }
+
+}
+
+bool exists(hash_table *ht, char* value)
+{
+    for (int i = 0; i < ht -> size; i++) {
+        for (hash_list *node = ht -> entries[i]; node != NULL; node = node -> next) {
+            if (node -> value == value)
+                return true;
+        }
+    }
+
+    return false;
+}
+
+void delete(hash_table *ht, char* val)
+{
+    hash_list *prec;
+    for (int i = 0; i < ht -> size; i++) {
+        for (hash_list *node = ht -> entries[i]; node != NULL; node = node -> next) {
+            if (node -> value == val){
+                free(node);
+                prec -> next = NULL;
+                return;
+            }
+            prec = node;
+        }
+    }
+
+}
+
+
+void main()
+{
+    hash_table *ht= malloc(sizeof( *ht));
+    ht -> size = 10;
+    ht -> hash_function = hash;
+    ht -> entries = calloc(10, sizeof(ht -> entries));
+
+    insert(ht, "modasasdasuse");
+    insert(ht, "asdasasd");
+    insert(ht, "adsadasda");
+    insert(ht, "asdasdas");
+    insert(ht, "cadsadaser");
+    insert(ht, "asdsad");
+    insert(ht, "asdassadasdas");
+    insert(ht, "tv");
+
+    if(exists(ht, "tv")==true)
+    	printf("1\n");
+    else
+    	printf("0\n");
+    delete(ht, "tv");
+    if(exists(ht, "tv")==true)
+    	printf("1\n");
+    else
+    	printf("0\n");
+
+
+}
