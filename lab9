@@ -1,0 +1,122 @@
+EX 1:
+typedef struct {
+    size_t node_count;
+    bool **adj_matrix;
+} undirected_graph_t;
+
+void graph_insert_edge(undirected_graph_t * const graph,
+    const size_t source_id,
+
+    const size_t destination_id) {
+		if (source_id != destination_id) {
+			graph -> adj_matrix[source_id][destination_id] = true;
+			graph -> adj_matrix[destination_id][source_id] = true;
+	}
+
+
+}
+
+void graph_remove_edge(undirected_graph_t * const graph,
+    const size_t source_id,
+    const size_t destination_id) {
+	if(graph -> adj_matrix[source_id][destination_id]==true &&
+	 graph -> adj_matrix[destination_id][source_id] == true){
+	 	graph -> adj_matrix[source_id][destination_id] = false;
+		graph -> adj_matrix[destination_id][source_id] = false;
+
+	}
+
+}
+
+bool graph_is_edge(undirected_graph_t * const graph,
+    const size_t source_id,
+    const size_t destination_id) {
+	if(graph -> adj_matrix[source_id][destination_id]==true &&
+	 graph -> adj_matrix[destination_id][source_id] == true)
+		return true;
+	
+
+    return false;
+}
+
+EX 2:
+
+void graph_traverse_DFS_recursive(undirected_graph_t * const graph,
+bool * const visited, const size_t start_node_id,
+  visit_func_t func) {
+	int n;
+	n=graph->node_count;
+	visited[start_node_id] = true;
+	func(start_node_id);
+	for (int i = 0; i < n; i++) {
+		if ( !visited[i]  && graph->adj_matrix[start_node_id][i]) {
+			graph_traverse_DFS_recursive(graph,visited,i,func);
+		}
+	}
+
+}
+void graph_traverse_BFS(undirected_graph_t * const graph,
+const size_t start_node_id, visit_func_t func) {
+	int x, i,n;
+	n=graph->node_count;
+	bool *visited = (bool *)malloc(n * sizeof(bool));
+
+	for (int j = 0; j<n; j++) {
+		visited[j]=false;
+	}
+	dequeue_t *stiva = alloc_deq();
+	push_back(stiva, start_node_id);
+	for (int i = 0; i < n; i++) {
+		visited[i] = false;
+	}
+
+	visited[start_node_id]=true;
+	while(size(stiva) > 0) {
+		x = front(stiva);
+		visited[x] = true;
+		pop_front(stiva);
+		func(x);
+		for (i = 0; i <= n; i++) {
+			if ( !visited[i] && graph_is_edge(graph,x,i)) {
+				push_back(stiva,i);
+				visited[i]=true;
+			}
+		}
+	}
+
+}
+
+EX 4:
+
+void graph_traverse_DFS_recur(undirected_graph_t * const graph,
+	bool * const visited,const size_t start_node_id) {
+	int n;
+	n=graph->node_count;
+	visited[start_node_id] = true;
+	for (int i = 0; i < n; i++) {
+		if (visited[i] == false && graph->adj_matrix[start_node_id][i]) {
+			graph_traverse_DFS_recur(graph,visited,i);
+		}
+	}
+}
+size_t connected_componenets(undirected_graph_t *graph) {
+	bool *vazut = (bool *)malloc(graph->node_count*sizeof(bool));
+	int nr = 0;
+	int i = 0,n;
+	n = graph->node_count;
+	for (i = 0; i < n; i++) {
+		vazut[i] = false;
+	}
+
+	for (i = 0; i <n; i++) {
+		if (!vazut[i]) {
+			graph_traverse_DFS_recur(graph, vazut, i);
+			nr++;
+        }
+	}
+	return nr;
+}
+
+
+
+
