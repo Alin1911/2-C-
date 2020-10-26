@@ -1,3 +1,3 @@
 # Structuri de date
-SD-UPB
+SD
 PS: Unele trebuie reparate sau îmbunătățite.
